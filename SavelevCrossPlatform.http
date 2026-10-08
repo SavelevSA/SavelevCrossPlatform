@@ -1,0 +1,66 @@
+@host = http://localhost:5176
+@userToken = paste-user-token-here
+@adminToken = paste-admin-token-here
+
+### Получить обычный токен; скопировать поле token в userToken выше
+POST {{host}}/api/auth/token/user
+
+### Получить токен администратора; скопировать поле token в adminToken выше
+POST {{host}}/api/auth/token/admin
+
+### Справочники
+GET {{host}}/api/teachers
+
+###
+GET {{host}}/api/lab-works
+
+###
+GET {{host}}/api/classrooms
+
+### Создать отчёт: система сама определит результат проверки
+POST {{host}}/api/reports
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "teacherId": 1,
+  "labWorkId": 1,
+  "classroomId": 1,
+  "deviationPercent": 2.5
+}
+
+### Получить отчёт
+GET {{host}}/api/reports/1
+Authorization: Bearer {{userToken}}
+
+### Отчёты с данными связанных объектов
+GET {{host}}/api/queries/report-details
+Authorization: Bearer {{userToken}}
+
+### Только неуспешные отчёты
+GET {{host}}/api/queries/report-details?passed=false
+Authorization: Bearer {{userToken}}
+
+### Работы по профилю преподавателя
+GET {{host}}/api/queries/teachers/1/works
+Authorization: Bearer {{userToken}}
+
+### Работы, доступные в аудитории
+GET {{host}}/api/queries/classrooms/2/works
+Authorization: Bearer {{userToken}}
+
+### Изменить измерение и повторно проверить отчёт
+PUT {{host}}/api/reports/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "teacherId": 1,
+  "labWorkId": 1,
+  "classroomId": 1,
+  "deviationPercent": 8
+}
+
+### Удалить отчёт
+DELETE {{host}}/api/reports/1
+Authorization: Bearer {{adminToken}}
