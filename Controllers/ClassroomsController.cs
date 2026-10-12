@@ -1,64 +1,62 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SavelevCrossPlatform.Data;
-using SavelevCrossPlatform.Models;
+using SavelevCrossPlatform.Dtos;
+using SavelevCrossPlatform.Services;
 
 namespace SavelevCrossPlatform.Controllers;
 
 [ApiController]
 [Route("api/classrooms")]
-public class ClassroomsController(LabDbContext db) : ControllerBase
+public class ClassroomsController : ControllerBase
 {
+    private readonly ClassroomService _classrooms;
+
+    public ClassroomsController(ClassroomService classrooms)
+    {
+        _classrooms = classrooms;
+    }
+
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Classroom>>> GetAll(CancellationToken cancellationToken) =>
-        Ok(await db.Classrooms.AsNoTracking().ToArrayAsync(cancellationToken));
+    public async Task<ActionResult<IEnumerable<ClassroomDto>>> GetAll(CancellationToken cancellationToken) =>
+        Ok(await _classrooms.GetAllAsync(cancellationToken));
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Classroom>> Get(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClassroomDto>> Get(int id, CancellationToken cancellationToken)
     {
-        var classroom = await db.Classrooms.AsNoTracking()
-            .FirstOrDefaultAsync(item => item.Id == id, cancellationToken);
+        var classroom = await _classrooms.GetAsync(id, cancellationToken);
         return classroom is null ? NotFound() : Ok(classroom);
     }
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<Classroom>> Create(ClassroomRequest request, CancellationToken cancellationToken)
+    public async Task<ActionResult<ClassroomDto>> Create(ClassroomDto request, CancellationToken cancellationToken)
     {
         if (Invalid(request)) return BadRequest("Номер аудитории и список оборудования обязательны.");
-        var classroom = new Classroom(0, request.Number, request.Equipment);
-        db.Classrooms.Add(classroom);
-        await db.SaveChangesAsync(cancellationToken);
+        var classroom = await _classrooms.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(Get), new { id = classroom.Id }, classroom);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, ClassroomRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(int id, ClassroomDto request, CancellationToken cancellationToken)
     {
         if (Invalid(request)) return BadRequest("Номер аудитории и список оборудования обязательны.");
-        var classroom = await db.Classrooms.FirstOrDefaultAsync(item => item.Id == id, cancellationToken);
-        if (classroom is null) return NotFound();
-        classroom.Update(request.Number, request.Equipment);
-        await db.SaveChangesAsync(cancellationToken);
-        return NoContent();
+        return await _classrooms.UpdateAsync(id, request, cancellationToken) ? NoContent() : NotFound();
     }
 
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var classroom = await db.Classrooms.FirstOrDefaultAsync(item => item.Id == id, cancellationToken);
-        if (classroom is null) return NotFound();
-        if (await db.Reports.AnyAsync(item => item.ClassroomId == id, cancellationToken))
-            return Conflict("Аудитория используется в отчёте.");
-        db.Classrooms.Remove(classroom);
-        await db.SaveChangesAsync(cancellationToken);
-        return NoContent();
+        return await _classrooms.DeleteAsync(id, cancellationToken) switch
+        {
+            DeleteResult.NotFound => NotFound(),
+            DeleteResult.InUse => Conflict("Аудитория используется в отчёте."),
+            _ => NoContent()
+        };
     }
 
-    private static bool Invalid(ClassroomRequest request) =>
+    private static bool Invalid(ClassroomDto request) =>
         string.IsNullOrWhiteSpace(request.Number) || request.Equipment is null ||
         request.Equipment.Any(string.IsNullOrWhiteSpace);
 }

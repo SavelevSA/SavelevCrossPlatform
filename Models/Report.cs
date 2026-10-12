@@ -31,5 +31,6 @@ public class Report
             : !work.IsWithinTolerance(deviationPercent) ? "Измеренное отклонение превышает допустимое."
             : "Проверка пройдена.";
         CheckedAt = DateTimeOffset.UtcNow;
+
     }
 }

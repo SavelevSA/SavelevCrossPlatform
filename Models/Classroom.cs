@@ -8,13 +8,13 @@ public class Classroom
 
     private Classroom() { }
 
-    public Classroom(int id, string number, string[] equipment)
+    public Classroom(int id, string number, IEnumerable<string> equipment)
     {
         Id = id;
         Update(number, equipment);
     }
 
-    public void Update(string number, string[] equipment)
+    public void Update(string number, IEnumerable<string> equipment)
     {
         Number = number.Trim();
         Equipment = equipment.Select(item => item.Trim()).ToList();

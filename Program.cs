@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using SavelevCrossPlatform.Auth;
 using SavelevCrossPlatform.Data;
+using SavelevCrossPlatform.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<LabDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LabDbContext")
         ?? throw new InvalidOperationException("Не задана строка подключения LabDbContext.")));
+builder.Services.AddScoped<TeacherService>();
+builder.Services.AddScoped<LabWorkService>();
+builder.Services.AddScoped<ClassroomService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<QueryService>();
 var tokens = new DemoTokenService();
 builder.Services.AddSingleton(tokens);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
