@@ -7,9 +7,9 @@ namespace SavelevCrossPlatform.Services;
 
 public class TeacherService(LabDbContext context)
 {
-    public async Task<TeacherDto[]> GetAllAsync(CancellationToken cancellationToken) =>
-        (await context.Teachers.AsNoTracking().ToArrayAsync(cancellationToken))
-            .Select(item => item.ToDto()).ToArray();
+    public async Task<List<TeacherDto>> GetAllAsync(CancellationToken cancellationToken) =>
+        (await context.Teachers.AsNoTracking().ToListAsync(cancellationToken))
+            .Select(item => item.ToDto()).ToList();
 
     public async Task<TeacherDto?> GetAsync(int id, CancellationToken cancellationToken) =>
         (await context.Teachers.AsNoTracking()

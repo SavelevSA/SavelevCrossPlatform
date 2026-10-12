@@ -6,7 +6,7 @@ namespace SavelevCrossPlatform.Services;
 
 public class QueryService(LabDbContext context)
 {
-    public async Task<ReportDetailDto[]> ReportDetailsAsync(bool? passed, CancellationToken cancellationToken) =>
+    public async Task<List<ReportDetailDto>> ReportDetailsAsync(bool? passed, CancellationToken cancellationToken) =>
         await (
             from report in context.Reports.AsNoTracking()
             join teacher in context.Teachers.AsNoTracking() on report.TeacherId equals teacher.Id
@@ -16,27 +16,27 @@ public class QueryService(LabDbContext context)
             select new ReportDetailDto(
                 report.Id, teacher.Name, work.Title, classroom.Number,
                 report.DeviationPercent, report.Passed, report.Conclusion, report.CheckedAt))
-        .ToArrayAsync(cancellationToken);
+        .ToListAsync(cancellationToken);
 
-    public async Task<TeacherWorkDto[]?> TeacherWorksAsync(int teacherId, CancellationToken cancellationToken)
+    public async Task<List<TeacherWorkDto>?> TeacherWorksAsync(int teacherId, CancellationToken cancellationToken)
     {
         var teacher = await context.Teachers.AsNoTracking()
             .FirstOrDefaultAsync(item => item.Id == teacherId, cancellationToken);
         if (teacher is null) return null;
-        var works = await context.Works.AsNoTracking().ToArrayAsync(cancellationToken);
+        var works = await context.Works.AsNoTracking().ToListAsync(cancellationToken);
         return works.Where(teacher.CanSupervise)
             .Select(work => new TeacherWorkDto(teacher.Name, work.Title, work.Id))
-            .ToArray();
+            .ToList();
     }
 
-    public async Task<ClassroomWorkDto[]?> ClassroomWorksAsync(int classroomId, CancellationToken cancellationToken)
+    public async Task<List<ClassroomWorkDto>?> ClassroomWorksAsync(int classroomId, CancellationToken cancellationToken)
     {
         var classroom = await context.Classrooms.AsNoTracking()
             .FirstOrDefaultAsync(item => item.Id == classroomId, cancellationToken);
         if (classroom is null) return null;
-        var works = await context.Works.AsNoTracking().ToArrayAsync(cancellationToken);
+        var works = await context.Works.AsNoTracking().ToListAsync(cancellationToken);
         return works.Where(classroom.CanHost)
             .Select(work => new ClassroomWorkDto(classroom.Number, work.Title, work.Id))
-            .ToArray();
+            .ToList();
     }
 }

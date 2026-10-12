@@ -17,7 +17,7 @@ public class ClassroomsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ClassroomDto>>> GetAll(CancellationToken cancellationToken) =>
+    public async Task<ActionResult<List<ClassroomDto>>> GetAll(CancellationToken cancellationToken) =>
         Ok(await _classrooms.GetAllAsync(cancellationToken));
 
     [HttpGet("{id:int}")]

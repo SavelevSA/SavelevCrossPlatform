@@ -17,7 +17,7 @@ public class LabWorksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<LabWorkDto>>> GetAll(CancellationToken cancellationToken) =>
+    public async Task<ActionResult<List<LabWorkDto>>> GetAll(CancellationToken cancellationToken) =>
         Ok(await _works.GetAllAsync(cancellationToken));
 
     [HttpGet("{id:int}")]

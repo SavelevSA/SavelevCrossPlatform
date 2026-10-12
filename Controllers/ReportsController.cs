@@ -18,7 +18,7 @@ public class ReportsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ReportDto>>> GetAll(CancellationToken cancellationToken) =>
+    public async Task<ActionResult<List<ReportDto>>> GetAll(CancellationToken cancellationToken) =>
         Ok(await _reports.GetAllAsync(cancellationToken));
 
     [HttpGet("{id:int}")]
