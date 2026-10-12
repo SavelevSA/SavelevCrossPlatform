@@ -1,8 +1,0 @@
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.csproj.AssemblyReference.cache
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\rpswa.dswa.cache.json
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.GeneratedMSBuildEditorConfig.editorconfig
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.AssemblyInfoInputs.cache
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.AssemblyInfo.cs
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.csproj.CoreCompileInputs.cache
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.MvcApplicationPartsAssemblyInfo.cs
-D:\7semestr\crossplatform\SavelevCrossPlatform\obj\EquipmentListCheck\Debug\net10.0\SavelevCrossPlatform.MvcApplicationPartsAssemblyInfo.cache

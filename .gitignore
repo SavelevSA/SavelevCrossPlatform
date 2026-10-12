@@ -1,0 +1,13 @@
+# Visual Studio user and workspace files
+.vs/
+*.csproj.user
+*.suo
+
+# .NET build output
+**/bin/
+**/obj/
+TestResults/
+
+# Published files are generated from the project source.
+# The release ZIP is kept separately for the lab demonstration.
+/release/
