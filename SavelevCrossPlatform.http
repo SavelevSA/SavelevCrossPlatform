@@ -2,11 +2,23 @@
 @userToken = paste-user-token-here
 @adminToken = paste-admin-token-here
 
-### Получить обычный токен; скопировать поле token в userToken выше
-POST {{host}}/api/auth/token/user
+### Войти как обычный пользователь; скопировать поле token в userToken выше
+POST {{host}}/api/auth/login
+Content-Type: application/json
 
-### Получить токен администратора; скопировать поле token в adminToken выше
-POST {{host}}/api/auth/token/admin
+{
+  "username": "student",
+  "password": "123"
+}
+
+### Войти как администратор; скопировать поле token в adminToken выше
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "123"
+}
 
 ### Справочники
 GET {{host}}/api/teachers

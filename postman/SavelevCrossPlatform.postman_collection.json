@@ -2,19 +2,33 @@
   "info": {
     "_postman_id": "e9a0173f-5131-4e8f-98b3-66ea6d985562",
     "name": "Система контроля лабораторного стенда",
-    "description": "Запускайте коллекцию по порядку: сначала получаются JWT-токены, затем проверяются 401/403, CRUD и объединённые запросы. Учебные токены действуют один час и сбрасываются после перезапуска API.",
+    "description": "Сначала войдите под student и admin: токены сохраняются в переменных коллекции. Затем проверяются 401/403, CRUD и сводные запросы. Учебные JWT действуют два часа.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "1. Получение токенов",
+      "name": "1. Вход по логину и паролю",
       "item": [
         {
-          "name": "Токен пользователя",
+          "name": "Вход пользователя",
           "request": {
             "method": "POST",
-            "header": [],
-            "url": "{{baseUrl}}/api/auth/token/user"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{userLogin}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "event": [
             {
@@ -30,11 +44,25 @@
           ]
         },
         {
-          "name": "Токен администратора",
+          "name": "Вход администратора",
           "request": {
             "method": "POST",
-            "header": [],
-            "url": "{{baseUrl}}/api/auth/token/admin"
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminLogin}}\",\n  \"password\": \"{{adminPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
           },
           "event": [
             {
@@ -44,6 +72,39 @@
                 "exec": [
                   "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
                   "if (pm.response.code === 200) pm.collectionVariables.set(\"adminToken\", pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Неверный пароль: 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{adminLogin}}\",\n  \"password\": \"wrong-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
@@ -891,6 +952,22 @@
     {
       "key": "reportId",
       "value": ""
+    },
+    {
+      "key": "userLogin",
+      "value": "student"
+    },
+    {
+      "key": "userPassword",
+      "value": "123"
+    },
+    {
+      "key": "adminLogin",
+      "value": "admin"
+    },
+    {
+      "key": "adminPassword",
+      "value": "123"
     }
   ]
 }
