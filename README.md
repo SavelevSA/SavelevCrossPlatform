@@ -8,7 +8,7 @@
 dotnet run --launch-profile http
 ```
 
-Адрес API: `http://localhost:5176`. В режиме разработки описание OpenAPI доступно по адресу `http://localhost:5176/openapi/v1.json`. Готовые запросы находятся в `SavelevCrossPlatform.http`; полная коллекция для Postman — в `postman/SavelevCrossPlatform.postman_collection.json`.
+Адрес API при запуске проекта и релизной сборки: `http://localhost:5000`. Порт задан в `appsettings.json` и профиле запуска `http`. В режиме разработки описание OpenAPI доступно по адресу `http://localhost:5000/openapi/v1.json`. Готовые запросы находятся в `SavelevCrossPlatform.http`; полная коллекция для Postman — в `postman/SavelevCrossPlatform.postman_collection.json`.
 
 Для запуска нужны .NET 10 и установленный SQL Server LocalDB (`MSSQLLocalDB`). Строка подключения находится в `appsettings.json` и при необходимости может быть изменена. При первом запуске приложение автоматически применяет миграции из папки `Migrations` и добавляет два примера каждого справочника. При следующих запусках существующие данные сохраняются. База `MvcMovieContext` при этом не меняется.
 
@@ -53,7 +53,7 @@ dotnet run --launch-profile http
 
 ```powershell
 dotnet publish -c Release -o release
-dotnet release/SavelevCrossPlatform.dll --urls http://localhost:5176
+dotnet release/SavelevCrossPlatform.dll
 ```
 
 Release-версия также подключается к LocalDB и создаёт таблицы при первом запуске; отдельный файл базы в архив не входит. Импортируйте `postman/SavelevCrossPlatform.postman_collection.json` в Postman и запускайте запросы по порядку. Первые два запроса входят под `student` и `admin` и сохраняют токены в переменные коллекции; третий проверяет `401` при неверном пароле. Далее идут проверки `401` и `403`, CRUD для всех ресурсов, проверка отчёта и три объединённых запроса. Если поменяли пароль через переменную окружения, обновите значения `userPassword` и `adminPassword` в коллекции. Полный прогон коллекции рассчитан на исходные примеры с ID `1` и `2`.

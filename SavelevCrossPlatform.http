@@ -1,4 +1,4 @@
-@host = http://localhost:5176
+@host = http://localhost:5000
 @userToken = paste-user-token-here
 @adminToken = paste-admin-token-here
 
