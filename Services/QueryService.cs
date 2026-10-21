@@ -6,17 +6,22 @@ namespace SavelevCrossPlatform.Services;
 
 public class QueryService(LabDbContext context)
 {
-    public async Task<List<ReportDetailDto>> ReportDetailsAsync(bool? passed, CancellationToken cancellationToken) =>
-        await (
-            from report in context.Reports.AsNoTracking()
-            join teacher in context.Teachers.AsNoTracking() on report.TeacherId equals teacher.Id
-            join work in context.Works.AsNoTracking() on report.LabWorkId equals work.Id
-            join classroom in context.Classrooms.AsNoTracking() on report.ClassroomId equals classroom.Id
-            where !passed.HasValue || report.Passed == passed.Value
-            select new ReportDetailDto(
-                report.Id, teacher.Name, work.Title, classroom.Number,
-                report.DeviationPercent, report.Passed, report.Conclusion, report.CheckedAt))
-        .ToListAsync(cancellationToken);
+    public async Task<List<ReportDetailDto>> ReportDetailsAsync(bool? passed, CancellationToken cancellationToken)
+    {
+        var reports = await context.Reports.AsNoTracking()
+            .Include(report => report.Teacher)
+            .Include(report => report.LabWork)
+            .Include(report => report.Classroom)
+            .Where(report => !passed.HasValue || report.Passed == passed.Value)
+            .ToListAsync(cancellationToken);
+
+        return reports
+            .Select(report => new ReportDetailDto(
+                report.Id, report.Teacher.Name, report.LabWork.Title,
+                report.Classroom.Number, report.DeviationPercent,
+                report.Passed, report.Conclusion, report.CheckedAt))
+            .ToList();
+    }
 
     public async Task<List<TeacherWorkDto>?> TeacherWorksAsync(int teacherId, CancellationToken cancellationToken)
     {

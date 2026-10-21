@@ -4,8 +4,11 @@ public class Report
 {
     public int Id { get; private set; }
     public int TeacherId { get; private set; }
+    public Teacher Teacher { get; private set; } = null!;
     public int LabWorkId { get; private set; }
+    public LabWork LabWork { get; private set; } = null!;
     public int ClassroomId { get; private set; }
+    public Classroom Classroom { get; private set; } = null!;
     public decimal DeviationPercent { get; private set; }
     public bool Passed { get; private set; }
     public string Conclusion { get; private set; } = string.Empty;
@@ -22,8 +25,11 @@ public class Report
     public void Recheck(Teacher teacher, LabWork work, Classroom classroom, decimal deviationPercent)
     {
         TeacherId = teacher.Id;
+        Teacher = teacher;
         LabWorkId = work.Id;
+        LabWork = work;
         ClassroomId = classroom.Id;
+        Classroom = classroom;
         DeviationPercent = deviationPercent;
         Passed = teacher.CanSupervise(work) && classroom.CanHost(work) && work.IsWithinTolerance(deviationPercent);
         Conclusion = !teacher.CanSupervise(work) ? "Профиль преподавателя не соответствует работе."

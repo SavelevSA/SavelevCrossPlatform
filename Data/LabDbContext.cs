@@ -37,9 +37,9 @@ public class LabDbContext(DbContextOptions<LabDbContext> options) : DbContext(op
         {
             entity.Property(item => item.DeviationPercent).HasPrecision(5, 2);
             entity.Property(item => item.Conclusion).HasMaxLength(300).IsRequired();
-            entity.HasOne<Teacher>().WithMany().HasForeignKey(item => item.TeacherId).OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne<LabWork>().WithMany().HasForeignKey(item => item.LabWorkId).OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne<Classroom>().WithMany().HasForeignKey(item => item.ClassroomId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Teacher).WithMany().HasForeignKey(item => item.TeacherId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.LabWork).WithMany().HasForeignKey(item => item.LabWorkId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(item => item.Classroom).WithMany().HasForeignKey(item => item.ClassroomId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
