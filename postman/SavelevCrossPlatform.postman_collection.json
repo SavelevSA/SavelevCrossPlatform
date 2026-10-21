@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "e9a0173f-5131-4e8f-98b3-66ea6d985562",
     "name": "Система контроля лабораторного стенда",
-    "description": "Сначала войдите под student и admin: токены сохраняются в переменных коллекции. Затем проверяются 401/403, CRUD и сводные запросы. Учебные JWT действуют два часа.",
+    "description": "Сначала войдите под student и admin: токены сохраняются в переменных коллекции. Тестовые преподаватель, работа и аудитория создаются перед отчётом, их ID сохраняются автоматически. Затем проверяются 401/403, CRUD и сводные запросы. Учебные JWT действуют два часа.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -679,6 +679,120 @@
       "name": "6. Отчёты и объединённые данные",
       "item": [
         {
+          "name": "Создать преподавателя для отчёта",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/teachers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Сидоров С. С.\",\n  \"discipline\": \"Физика\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"teacherId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Создать работу для отчёта",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/lab-works",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Проверка стенда\",\n  \"instructions\": \"Снимите показания мультиметра.\",\n  \"discipline\": \"Физика\",\n  \"requiredEquipment\": \"Мультиметр\",\n  \"maxDeviationPercent\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"labWorkId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Создать аудиторию для отчёта",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/classrooms",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"303\",\n  \"equipment\": [\n    \"Мультиметр\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "if (pm.response.code === 201) pm.collectionVariables.set(\"classroomId\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Создать успешный отчёт",
           "request": {
             "method": "POST",
@@ -695,7 +809,7 @@
             "url": "{{baseUrl}}/api/reports",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"teacherId\": 1,\n  \"labWorkId\": 1,\n  \"classroomId\": 1,\n  \"deviationPercent\": 2.5\n}",
+              "raw": "{\n  \"teacherId\": {{teacherId}},\n  \"labWorkId\": {{labWorkId}},\n  \"classroomId\": {{classroomId}},\n  \"deviationPercent\": 2.5\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -774,7 +888,7 @@
                 "value": "Bearer {{userToken}}"
               }
             ],
-            "url": "{{baseUrl}}/api/queries/teachers/1/works"
+            "url": "{{baseUrl}}/api/queries/teachers/{{teacherId}}/works"
           },
           "event": [
             {
@@ -798,7 +912,7 @@
                 "value": "Bearer {{userToken}}"
               }
             ],
-            "url": "{{baseUrl}}/api/queries/classrooms/2/works"
+            "url": "{{baseUrl}}/api/queries/classrooms/{{classroomId}}/works"
           },
           "event": [
             {
@@ -829,7 +943,7 @@
             "url": "{{baseUrl}}/api/reports/{{reportId}}",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"teacherId\": 1,\n  \"labWorkId\": 1,\n  \"classroomId\": 1,\n  \"deviationPercent\": 8\n}",
+              "raw": "{\n  \"teacherId\": {{teacherId}},\n  \"labWorkId\": {{labWorkId}},\n  \"classroomId\": {{classroomId}},\n  \"deviationPercent\": 8\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -883,7 +997,7 @@
                 "value": "Bearer {{adminToken}}"
               }
             ],
-            "url": "{{baseUrl}}/api/teachers/1"
+            "url": "{{baseUrl}}/api/teachers/{{teacherId}}"
           },
           "event": [
             {
@@ -908,6 +1022,78 @@
               }
             ],
             "url": "{{baseUrl}}/api/reports/{{reportId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Удалить преподавателя после отчёта",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/teachers/{{teacherId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Удалить работу после отчёта",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/lab-works/{{labWorkId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 204\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Удалить аудиторию после отчёта",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/classrooms/{{classroomId}}"
           },
           "event": [
             {
